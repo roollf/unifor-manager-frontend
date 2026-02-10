@@ -1,0 +1,101 @@
+<div class="matrices-page">
+  <header class="page-header">
+    <h1>Matrices</h1>
+    <p-button
+      label="New matrix"
+      icon="pi pi-plus"
+      (onClick)="openCreateDialog()"
+    />
+  </header>
+
+  <p-table
+    [value]="matrices()"
+    [loading]="loading()"
+    [tableStyle]="{ 'min-width': '50rem' }"
+    styleClass="p-datatable-sm"
+    [rowTrackBy]="trackById"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Classes</th>
+        <th style="width: 12rem">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-matrix>
+      <tr>
+        <td>{{ matrix.name }}</td>
+        <td>
+          @if (matrix.active) {
+            <p-tag value="Active" severity="success" />
+          } @else {
+            <p-tag value="Inactive" severity="secondary" />
+          }
+        </td>
+        <td>{{ matrix.classCount }}</td>
+        <td>
+          @if (!matrix.active) {
+            <p-button
+              label="Activate"
+              severity="secondary"
+              size="small"
+              (onClick)="activateMatrix(matrix)"
+              class="action-btn"
+            />
+          }
+          <a [routerLink]="['/coordinator/matrices', matrix.id, 'classes']" class="p-button p-button-sm p-button-outlined link-btn">
+            Classes
+          </a>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="empty-message">No matrices found. Create one to get started.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    header="Create matrix"
+    [visible]="createDialogVisible()"
+    [modal]="true"
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="closeCreateDialog()"
+    styleClass="create-dialog"
+  >
+    <form [formGroup]="createForm" (ngSubmit)="submitCreate()">
+      <div class="field">
+        <label for="matrix-name">Name</label>
+        <input
+          id="matrix-name"
+          type="text"
+          pInputText
+          formControlName="name"
+          placeholder="Matrix name"
+          class="w-full"
+        />
+        @if (createForm.controls.name.touched && createForm.controls.name.errors) {
+          <small class="p-error block mt-1">Name is required.</small>
+        }
+      </div>
+    </form>
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Cancel"
+        severity="secondary"
+        (onClick)="closeCreateDialog()"
+        [disabled]="creating()"
+      />
+      <p-button
+        label="Save"
+        (onClick)="submitCreate()"
+        [loading]="creating()"
+        [disabled]="createForm.invalid"
+      />
+    </ng-template>
+  </p-dialog>
+</div>

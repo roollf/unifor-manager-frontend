@@ -1,0 +1,125 @@
+.classes-page {
+  padding: 1rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.header-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.back-link {
+  color: var(--p-primary-color);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.header-title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.add-class-btn {
+  margin-left: auto;
+}
+
+.create-class-dialog .field {
+  margin-bottom: 1rem;
+}
+
+.create-class-dialog .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.create-class-dialog .w-full {
+  width: 100%;
+}
+
+.edit-class-dialog .edit-class-subject {
+  margin-bottom: 1rem;
+  color: var(--p-text-muted-color, #6c757d);
+}
+
+.edit-class-dialog .field {
+  margin-bottom: 1rem;
+}
+
+.edit-class-dialog .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.edit-class-dialog .w-full {
+  width: 100%;
+}
+
+.matrix-id {
+  font-size: 0.875rem;
+  color: var(--p-text-muted-color, #6c757d);
+}
+
+.invalid-id {
+  color: var(--p-text-muted-color);
+}
+
+.filters {
+  margin-bottom: 1.5rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.filter-row .field {
+  min-width: 8rem;
+}
+
+.filter-row .field label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.filter-row .checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-row .checkbox-field label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.filter-row .actions {
+  margin-left: auto;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--p-text-muted-color, #6c757d);
+}
+
+.action-btn {
+  margin-right: 0.25rem;
+}
+
+.action-btn:last-child {
+  margin-right: 0;
+}

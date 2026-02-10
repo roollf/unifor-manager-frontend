@@ -1,0 +1,325 @@
+<div class="classes-page">
+  <header class="page-header">
+    <div class="header-title">
+      <a routerLink="/coordinator/matrices" class="back-link">← Matrices</a>
+      <h1>Classes</h1>
+      @if (matrixId() !== null) {
+        <span class="matrix-id">Matrix ID: {{ matrixId() }}</span>
+        <p-button
+          label="Add class"
+          icon="pi pi-plus"
+          (onClick)="openCreateDialog()"
+          class="add-class-btn"
+        />
+      }
+    </div>
+  </header>
+
+  @if (matrixId() === null) {
+    <p class="invalid-id">Invalid matrix.</p>
+  } @else {
+    <p-confirmDialog />
+    <section class="filters" [formGroup]="filterForm">
+      <div class="filter-row">
+        <div class="field">
+          <label for="period">Period of day</label>
+          <p-select
+            id="period"
+            formControlName="periodOfDay"
+            [options]="periodOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="All"
+            styleClass="w-full"
+            [showClear]="true"
+          />
+        </div>
+        <div class="field">
+          <label for="filter-course">Authorized course</label>
+          <p-select
+            id="filter-course"
+            formControlName="authorizedCourseId"
+            [options]="courseOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="All"
+            styleClass="w-full"
+            [showClear]="true"
+          />
+        </div>
+        <div class="field">
+          <label for="max-min">Max students min</label>
+          <p-inputNumber
+            id="max-min"
+            formControlName="maxStudentsMin"
+            placeholder="—"
+            [useGrouping]="false"
+            styleClass="w-full"
+          />
+        </div>
+        <div class="field">
+          <label for="max-max">Max students max</label>
+          <p-inputNumber
+            id="max-max"
+            formControlName="maxStudentsMax"
+            placeholder="—"
+            [useGrouping]="false"
+            styleClass="w-full"
+          />
+        </div>
+        <div class="field checkbox-field">
+          <p-checkbox
+            formControlName="includeDeleted"
+            [binary]="true"
+            inputId="include-deleted"
+          />
+          <label for="include-deleted">Include deleted</label>
+        </div>
+        <div class="field actions">
+          <p-button label="Apply filters" (onClick)="applyFilters()" [loading]="loading()" />
+        </div>
+      </div>
+    </section>
+
+    <p-table
+      [value]="classes()"
+      [loading]="loading()"
+      [tableStyle]="{ 'min-width': '60rem' }"
+      styleClass="p-datatable-sm"
+      [rowTrackBy]="trackById"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Subject</th>
+          <th>Professor</th>
+          <th>Time slot</th>
+          <th>Authorized courses</th>
+          <th>Max students</th>
+          <th>Enrollments</th>
+          <th>Status</th>
+          <th style="width: 6rem">Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.subject?.name ?? '—' }}</td>
+          <td>{{ row.professor?.name ?? '—' }}</td>
+          <td>{{ formatTimeSlot(row.timeSlot) }}</td>
+          <td>{{ formatCourses(row.authorizedCourses) }}</td>
+          <td>{{ row.maxStudents }}</td>
+          <td>{{ row.currentEnrollments }}</td>
+          <td>
+            @if (row.deletedAt) {
+              <p-tag value="Deleted" severity="danger" />
+            } @else {
+              <p-tag value="Active" severity="success" />
+            }
+          </td>
+          <td>
+            <p-button
+              label="Edit"
+              icon="pi pi-pencil"
+              severity="secondary"
+              size="small"
+              (onClick)="openEditDialog(row)"
+              class="action-btn"
+            />
+            @if (!row.deletedAt) {
+              <p-button
+                label="Delete"
+                icon="pi pi-trash"
+                severity="danger"
+                size="small"
+                (onClick)="confirmDelete(row)"
+                class="action-btn"
+              />
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="empty-message">No classes found.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-dialog
+      header="Add class"
+      [visible]="createDialogVisible()"
+      [modal]="true"
+      [closable]="true"
+      [draggable]="false"
+      [resizable]="false"
+      (onHide)="closeCreateDialog()"
+      styleClass="create-class-dialog"
+    >
+      <form [formGroup]="createForm">
+        <div class="field">
+          <label for="create-subject">Subject</label>
+          <p-select
+            id="create-subject"
+            formControlName="subjectId"
+            [options]="subjectOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select subject"
+            styleClass="w-full"
+            [showClear]="false"
+          />
+          @if (createForm.controls.subjectId.touched && createForm.controls.subjectId.errors) {
+            <small class="p-error block mt-1">Subject is required.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="create-professor">Professor</label>
+          <p-select
+            id="create-professor"
+            formControlName="professorId"
+            [options]="professorOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select professor"
+            styleClass="w-full"
+            [showClear]="false"
+          />
+          @if (createForm.controls.professorId.touched && createForm.controls.professorId.errors) {
+            <small class="p-error block mt-1">Professor is required.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="create-timeslot">Time slot</label>
+          <p-select
+            id="create-timeslot"
+            formControlName="timeSlotId"
+            [options]="timeSlotOptions()"
+            optionLabel="label"
+            optionValue="id"
+            placeholder="Select time slot"
+            styleClass="w-full"
+            [showClear]="false"
+          />
+          @if (createForm.controls.timeSlotId.touched && createForm.controls.timeSlotId.errors) {
+            <small class="p-error block mt-1">Time slot is required.</small>
+          }
+        </div>
+        <div class="field">
+          <label for="create-courses">Authorized courses</label>
+          <p-multiSelect
+            id="create-courses"
+            formControlName="authorizedCourseIds"
+            [options]="courseOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select courses (optional)"
+            styleClass="w-full"
+            [showClear]="true"
+          />
+        </div>
+        <div class="field">
+          <label for="create-max">Max students</label>
+          <p-inputNumber
+            id="create-max"
+            formControlName="maxStudents"
+            [min]="1"
+            [useGrouping]="false"
+            styleClass="w-full"
+          />
+          @if (createForm.controls.maxStudents.touched && createForm.controls.maxStudents.errors) {
+            <small class="p-error block mt-1">Must be at least 1.</small>
+          }
+        </div>
+      </form>
+      <ng-template pTemplate="footer">
+        <p-button
+          label="Cancel"
+          severity="secondary"
+          (onClick)="closeCreateDialog()"
+          [disabled]="creating()"
+        />
+        <p-button
+          label="Save"
+          (onClick)="submitCreate()"
+          [loading]="creating()"
+          [disabled]="createForm.invalid"
+        />
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog
+      header="Edit class"
+      [visible]="editDialogVisible()"
+      [modal]="true"
+      [closable]="true"
+      [draggable]="false"
+      [resizable]="false"
+      (onHide)="closeEditDialog()"
+      styleClass="edit-class-dialog"
+    >
+      @if (editingClass(); as cls) {
+        <p class="edit-class-subject"><strong>Subject:</strong> {{ cls.subject.name }}</p>
+        <form [formGroup]="editForm">
+          <div class="field">
+            <label for="edit-professor">Professor</label>
+            <p-select
+              id="edit-professor"
+              formControlName="professorId"
+              [options]="professorOptions()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Select professor"
+              styleClass="w-full"
+              [showClear]="false"
+            />
+            @if (editForm.controls.professorId.touched && editForm.controls.professorId.errors) {
+              <small class="p-error block mt-1">Professor is required.</small>
+            }
+          </div>
+          <div class="field">
+            <label for="edit-timeslot">Time slot</label>
+            <p-select
+              id="edit-timeslot"
+              formControlName="timeSlotId"
+              [options]="timeSlotOptions()"
+              optionLabel="label"
+              optionValue="id"
+              placeholder="Select time slot"
+              styleClass="w-full"
+              [showClear]="false"
+            />
+            @if (editForm.controls.timeSlotId.touched && editForm.controls.timeSlotId.errors) {
+              <small class="p-error block mt-1">Time slot is required.</small>
+            }
+          </div>
+          <div class="field">
+            <label for="edit-courses">Authorized courses</label>
+            <p-multiSelect
+              id="edit-courses"
+              formControlName="authorizedCourseIds"
+              [options]="courseOptions()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Select courses (optional)"
+              styleClass="w-full"
+              [showClear]="true"
+            />
+          </div>
+        </form>
+      }
+      <ng-template pTemplate="footer">
+        <p-button
+          label="Cancel"
+          severity="secondary"
+          (onClick)="closeEditDialog()"
+          [disabled]="editing()"
+        />
+        <p-button
+          label="Save"
+          (onClick)="submitEdit()"
+          [loading]="editing()"
+          [disabled]="editForm.invalid"
+        />
+      </ng-template>
+    </p-dialog>
+  }
+</div>
