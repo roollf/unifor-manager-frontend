@@ -1,1 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+/* Unifor Manager — Global styles */
+
+/* Design token colors (user-provided palette) */
+@import './theme/colors.css';
+
+/* PrimeNG icons */
+@import 'primeicons/primeicons.css';
+
+/* Base reset and typography */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  color: var(--cinza-900);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}

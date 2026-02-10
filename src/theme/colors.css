@@ -1,0 +1,49 @@
+/**
+ * Unifor Manager — Design token colors
+ * Use these variables across the application for consistency.
+ */
+
+:root {
+  /* Azul anil */
+  --azul-principal: #004af7;
+  --azul-anil-700: #0035de;
+  --azul-anil-900: #0006c4;
+
+  /* Azul gelo */
+  --azul-gelo-principal: #e4f2fe;
+  --azul-gelo-100: #bedefd;
+  --azul-gelo-300: #70b4f8;
+
+  /* Azul marinho */
+  --azul-marinho-900: #132290;
+
+  /* Azul claro */
+  --azul-claro-300: #87b7fe;
+
+  /* Escalas de cinza */
+  --cinza-900: #212121; /* Título */
+  --cinza-700: #616161; /* Subtítulo */
+  --cinza-500: #2563eb; /* Bordas, backgrounds e outros */
+  --cinza-300: #d4dee8; /* Bordas, backgrounds e outros (typo fix: d4de8 → d4dee8) */
+  --cinza-100: #f5f5f5;
+
+  /* Cores semânticas — Verde */
+  --verde-800: #00872d;
+  --verde-principal: #00ab45;
+  --verde-100: #c2eaca;
+  --verde-50: #e6f7ea;
+
+  /* Cores semânticas — Vermelho */
+  --vermelho-900: #d20c00;
+  --vermelho-principal: #f73100;
+  --vermelho-background: #ffcab9;
+  --vermelho-50: #ffeee6;
+
+  /* Cores semânticas — Laranja */
+  --laranja-800: #f68a00;
+  --laranja-principal: #f7ad00;
+  --laranja-background: #fdeab2;
+  --laranja-50: #fff7e1;
+
+  /* Use these variables in components; PrimeNG primary overridden via providePrimeNG if needed */
+}
