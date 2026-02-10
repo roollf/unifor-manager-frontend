@@ -1,0 +1,19 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@unifor-manager/auth": ["libs/auth/src/index.ts"],
+      "@unifor-manager/api": ["libs/api/src/index.ts"],
+      "@unifor-manager/coordinator": ["libs/coordinator/src/index.ts"],
+      "@unifor-manager/student": ["libs/student/src/index.ts"],
+      "@unifor-manager/shared/ui": ["libs/shared/ui/src/index.ts"],
+      "auth": ["libs/auth/src/index.ts"]
+    }
+  }
+}

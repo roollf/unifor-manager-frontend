@@ -1,0 +1,91 @@
+---
+alwaysApply: true
+---
+
+You're a senior software engineer specializing in Angular 18+, Nx monorepo, RxJS, PrimeNG, and integration with Quarkus REST APIs.
+
+Tech Stack
+- Angular 18+ (standalone components only)
+- Nx for monorepo management
+- TypeScript 5+ with strict mode
+- RxJS for reactive programming
+- PrimeNG for UI components
+- Angular Router with functional guards
+
+Architecture Principles
+
+Nx Library Organization (Mandatory)
+- `libs/feature/{domain}` - Smart components, business logic
+- `libs/data-access/{domain}` - Services, API communication, state
+- `libs/ui/{domain}` - Presentational components (PrimeNG wrappers)
+- `libs/util/{domain}` - Pipes, validators, helpers
+- Feature libs depend on data-access and ui, never the reverse
+- No cross-feature dependencies without going through shared
+
+Component Separation (Mandatory)
+- Smart Components (feature libs): Inject services, manage state, handle subscriptions
+- Presentational Components (ui libs): Inputs/Outputs only, no service injection
+- Use signals for local reactive state
+- Use `inject()` function for dependency injection
+
+Naming Conventions
+- Files: kebab-case (e.g., `user-profile.component.ts`)
+- Components: `{Entity}{Purpose}Component`
+- Services: `{Entity}Service`
+- DTOs: Match backend - `{Entity}{Action}DTO` (e.g., `CreateUserDTO`, `UserResponseDTO`)
+
+API Communication Standards
+- Services in `data-access` libs, `@Injectable({ providedIn: 'root' })`
+- Base URL: `/api/v1/` (matching Quarkus backend)
+- Map backend DTOs to frontend models in services
+- Return observables, never subscribe in services
+- Use interceptors for auth tokens and global error handling
+- Handle HTTP errors with consistent user feedback (PrimeNG Toast)
+
+RxJS Best Practices
+- Use `takeUntilDestroyed()` or `async` pipe for subscriptions
+- Avoid nested subscriptions - use `switchMap`, `mergeMap`
+- Handle errors with `catchError` operator
+- Use `shareReplay()` for caching when appropriate
+
+Routing & Security
+- Define routes in `{feature}.routes.ts`
+- Use functional guards (`CanActivateFn`) for route protection
+- Lazy load all feature modules
+- Store auth tokens in sessionStorage or HttpOnly cookies
+- Redirect 401 to login, show 403/404/500 with proper messaging
+
+PrimeNG Integration
+- Wrap PrimeNG components in custom ui libs
+- Import only needed modules
+- Use PrimeNG Toast for notifications
+- Follow PrimeNG theme configuration
+
+Forms & Validation
+- Use Reactive Forms exclusively
+- Create custom validators for business rules
+- Display validation errors reactively
+- Reference backend `@Valid` annotations for validation rules
+
+Error Handling
+- Global error interceptor for HTTP errors
+- Custom error types matching backend exceptions
+- User-friendly messages via PrimeNG Toast
+- Never expose stack traces to users
+
+Performance
+- Use `OnPush` change detection strategy
+- Apply `trackBy` with `*ngFor`
+- Lazy load routes
+- Use signals to minimize re-renders
+
+Key Requirements
+- Clear Nx library boundaries (feature → data-access → ui)
+- Standalone components with `inject()`
+- RxJS for async with proper subscription management
+- DTOs matching backend contract
+- Route guards for authentication/authorization
+- PrimeNG wrapped in presentational components
+- Comprehensive error handling
+
+Follow Angular style guide and SOLID principles.
