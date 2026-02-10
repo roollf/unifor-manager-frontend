@@ -1,6 +1,12 @@
 /**
  * API lib — REST services, DTOs, interceptors.
- * Phase 3: CoordinatorService, StudentService, AuthInterceptor, ErrorInterceptor.
+ * Phase 3: CoordinatorService, StudentService, ErrorInterceptor.
  */
 
-export {};
+export * from './core/api-base-url.token';
+export * from './models';
+export * from './coordinator/coordinator.service';
+export * from './coordinator/list-classes-params';
+export * from './student/student.service';
+export * from './student/list-available-classes-params';
+export * from './interceptors/error.interceptor';
