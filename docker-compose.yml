@@ -1,0 +1,12 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Point to backend and Keycloak (e.g. on host or other containers)
+        API_URL: http://localhost:8080
+        KEYCLOAK_URL: http://localhost:8081
+    ports:
+      - "4200:80"
+    container_name: unifor-manager-frontend
