@@ -1,0 +1,33 @@
+.available-classes-page {
+  padding: 1rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--app-text, #495057);
+}
+
+.student-course-info {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.student-course-info .muted {
+  font-style: italic;
+}
+
+.filter-panel .filter-row .field.w-full,
+.filter-panel .w-full {
+  width: 100%;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--app-text-muted, #6c757d) !important;
+}

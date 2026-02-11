@@ -1,0 +1,107 @@
+<div class="available-classes-page">
+  <header class="page-header">
+    <h1>Turmas disponíveis</h1>
+    <p class="student-course-info">
+      Seu curso:
+      @if (studentCourse() === undefined) {
+        <span class="muted">…</span>
+      } @else if (studentCourse()) {
+        <span>{{ studentCourse()!.name }}</span>
+      } @else {
+        <span class="muted">Não informado</span>
+      }
+    </p>
+  </header>
+
+  <section class="filters filter-panel" [formGroup]="filterForm">
+    <div class="filter-row">
+      <div class="field">
+        <label for="filter-matrix">ID da matriz</label>
+        <p-inputNumber
+          id="filter-matrix"
+          formControlName="matrixId"
+          placeholder="Opcional"
+          [useGrouping]="false"
+          class="w-full"
+          [showClear]="true"
+        />
+      </div>
+      <div class="field">
+        <label for="filter-subject">Disciplina</label>
+        <p-select
+          id="filter-subject"
+          formControlName="subjectId"
+          [options]="subjectOptions()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Todos"
+          class="w-full"
+          [showClear]="true"
+        />
+      </div>
+      <div class="field actions">
+        <p-button
+          label="Aplicar filtros"
+          (onClick)="applyFilters()"
+          [loading]="loading()"
+        />
+      </div>
+    </div>
+  </section>
+
+  <p-table
+    [value]="classes()"
+    [loading]="loading()"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    class="p-datatable-sm app-table"
+    [rowTrackBy]="trackById"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Disciplina</th>
+        <th>Professor</th>
+        <th>Horário</th>
+        <th>Vagas</th>
+        <th>Autorizado para meu curso</th>
+        <th style="width: 10rem">Ações</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-class>
+      <tr>
+        <td>{{ class.subject.name }}</td>
+        <td>{{ class.professor.name }}</td>
+        <td>{{ formatTimeSlot(class.timeSlot) }}</td>
+        <td>{{ class.availableSeats }} / {{ class.maxStudents }}</td>
+        <td>
+          @if (class.authorizedForStudentCourse) {
+            <p-tag value="Sim" severity="success" />
+          } @else {
+            <p-tag value="Não" severity="secondary" />
+          }
+        </td>
+        <td>
+          <div class="table-actions">
+            <p-button
+              label="Matricular"
+              size="small"
+              (onClick)="enroll(class)"
+              [loading]="enrollingClassId() === class.id"
+              [disabled]="
+                class.availableSeats <= 0 ||
+                !class.authorizedForStudentCourse ||
+                enrollingClassId() !== null
+              "
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6" class="empty-message">
+          Nenhuma turma disponível com os filtros aplicados. Tente alterar os filtros ou volte mais tarde.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
