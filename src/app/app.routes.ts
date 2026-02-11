@@ -4,9 +4,18 @@ import { authGuard, createRoleGuard } from '@unifor-manager/auth';
 /**
  * Base route structure per ARCHITECTURE §3.2.
  * Coordinator and student routes protected by AuthGuard + RoleGuard.
+ * Default (/) loads a redirect component by role: coordinator → Matrizes, student → Minhas matrículas.
  */
 export const routes: Routes = [
-  { path: '', redirectTo: 'coordinator/matrices', pathMatch: 'full' },
+  {
+    path: '',
+    canActivate: [authGuard],
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/default-dashboard/default-dashboard.component').then(
+        (m) => m.DefaultDashboardComponent
+      ),
+  },
   {
     path: 'coordinator',
     canActivate: [authGuard, createRoleGuard('coordinator')],
@@ -54,5 +63,5 @@ export const routes: Routes = [
         (m) => m.ForbiddenComponent
       ),
   },
-  { path: '**', redirectTo: 'coordinator/matrices' },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

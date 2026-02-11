@@ -25,3 +25,110 @@ body {
   margin: 0;
   min-height: 100vh;
 }
+
+/* ----- App tables: cleaner, lighter look (used via class="app-table" on p-table) ----- */
+.app-table.p-datatable .p-datatable-table-container {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  background: #fff;
+  border: 1px solid var(--cinza-300, #e9ecef);
+}
+
+.app-table.p-datatable .p-datatable-thead > tr > th {
+  background: #f8f9fa;
+  color: #212121 !important;
+  font-weight: 600;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--cinza-300, #e9ecef);
+  font-size: 0.875rem;
+}
+
+.app-table.p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f1f3f5;
+  background: #fff;
+  color: #212121 !important;
+  font-size: 0.875rem;
+}
+
+.app-table.p-datatable .p-datatable-tbody > tr:hover > td {
+  background: #f8fafc;
+  color: #212121 !important;
+}
+
+/* Empty state row text */
+.app-table.p-datatable .p-datatable-tbody > tr > td.empty-message {
+  color: #616161 !important;
+}
+
+.app-table.p-datatable .p-datatable-tbody > tr:last-child > td {
+  border-bottom: none;
+}
+
+/* Action cells: consistent spacing between buttons/links */
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ----- Page headers and filter panels (match table styling) ----- */
+.page-header {
+  color: #212121;
+}
+
+.page-header h1 {
+  color: #212121;
+  font-weight: 600;
+}
+
+.page-header .student-course-info,
+.page-header .matrix-id,
+.page-header .invalid-id {
+  color: #616161;
+  font-size: 0.875rem;
+}
+
+/* Filter panel: card-style block matching tables (rounded, light bg, subtle border) */
+.filter-panel {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.5rem;
+}
+
+.filter-panel .filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.filter-panel .filter-row .field label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #212121;
+}
+
+.filter-panel .filter-row .field.actions {
+  margin-left: auto;
+}
+
+.filter-panel .filter-row .checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-panel .filter-row .checkbox-field label {
+  margin-bottom: 0;
+  cursor: pointer;
+  color: #212121;
+  font-size: 0.875rem;
+}
