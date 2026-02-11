@@ -1,3 +1,4 @@
+<p-toast />
 <div class="shell">
   <header class="shell-header">
     <h1 class="shell-title">
@@ -16,7 +17,35 @@
       }
     </nav>
   </header>
-  <main class="shell-main">
-    <router-outlet />
-  </main>
+  <div class="shell-body">
+    <aside class="shell-sidebar">
+      @if (userInfo(); as info) {
+        <div class="sidebar-panel">
+          <p class="sidebar-name">{{ info.name }}</p>
+          <p class="sidebar-meta">{{ info.email }}</p>
+          <p class="sidebar-meta">
+            {{ info.role === 'coordinator' ? 'Coordenador' : info.role === 'student' ? 'Aluno' : '—' }}
+          </p>
+          @if (info.role === 'student') {
+            <p class="sidebar-meta sidebar-course">
+              <span class="sidebar-label">Curso</span>
+              {{ info.courseName ?? '—' }}
+            </p>
+          }
+          <button
+            type="button"
+            class="sidebar-logout"
+            (click)="logout()"
+          >
+            Sair
+          </button>
+        </div>
+      } @else {
+        <div class="sidebar-panel sidebar-panel-empty">Carregando dados do usuário…</div>
+      }
+    </aside>
+    <main class="shell-main">
+      <router-outlet />
+    </main>
+  </div>
 </div>

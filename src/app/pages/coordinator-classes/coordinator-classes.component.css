@@ -1,0 +1,101 @@
+.classes-page {
+  padding: 1rem;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.header-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--azul-principal, #004af7);
+  text-decoration: none;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.back-link:hover {
+  background: var(--app-surface-hover, #eff1f3);
+  color: var(--azul-anil-700, #0035de);
+}
+
+.back-link .pi {
+  font-size: 1.25rem;
+}
+
+.header-title h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--app-text, #495057);
+}
+
+.add-class-btn {
+  margin-left: auto;
+}
+
+.create-class-dialog .field {
+  margin-bottom: 1rem;
+}
+
+.create-class-dialog .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.create-class-dialog .field-validation,
+.edit-class-dialog .field-validation {
+  min-height: 1.5rem;
+}
+
+.create-class-dialog .w-full {
+  width: 100%;
+}
+
+.edit-class-dialog .edit-class-subject {
+  margin-bottom: 1rem;
+  color: var(--p-text-muted-color, #6c757d);
+}
+
+.edit-class-dialog .field {
+  margin-bottom: 1rem;
+}
+
+.edit-class-dialog .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.edit-class-dialog .w-full {
+  width: 100%;
+}
+
+.matrix-id {
+  font-size: 0.875rem;
+}
+
+.invalid-id {
+  color: #616161;
+}
+
+.filter-panel .filter-row .field {
+  min-width: 8rem;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: #616161 !important;
+}
+

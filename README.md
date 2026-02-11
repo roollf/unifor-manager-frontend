@@ -1,59 +1,85 @@
-# UniforManagerFrontend
+# Unifor Manager — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.3.
+Frontend da aplicação **Unifor Manager**, sistema de gestão de matrículas e turmas para coordenadores e alunos. Desenvolvido em Angular com PrimeNG e autenticação Keycloak.
 
-## Development server
+## Stack
 
-To start a local development server, run:
+- **Angular** 21
+- **Nx** (workspace e build)
+- **PrimeNG** (UI: tabelas, formulários, diálogos)
+- **Keycloak** (autenticação e papéis: coordenador / aluno)
+- **RxJS** (fluxo reativo)
 
-```bash
-ng serve
-```
+## Pré-requisitos
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **Node.js** 20+ e **npm**
+- Backend da API em execução (ver [FRONTEND_CONTRACT.md](documentation/FRONTEND_CONTRACT.md))
+- Instância Keycloak configurada (realm, client)
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Desenvolvimento
 
 ```bash
-ng generate --help
+npm install
+npm start
 ```
 
-## Building
+Abre em [http://localhost:4200](http://localhost:4200). A aplicação usa por padrão:
 
-To build the project run:
+- **API:** `http://localhost:8080`
+- **Keycloak:** `http://localhost:8081` (realm: `unifor`, client: `unifor-manager`)
+
+Altere em `src/environments/environment.ts` se necessário.
+
+## Build
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Build de produção em `dist/unifor-manager-frontend/browser/`. Para customizar API e Keycloak em produção, edite `src/environments/environment.prod.ts` antes do build.
 
-## Running unit tests
+## Docker
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Build e execução com Docker Compose:
 
 ```bash
-ng test
+docker compose up --build
 ```
 
-## Running end-to-end tests
+A aplicação fica disponível em [http://localhost:4200](http://localhost:4200). Por padrão a imagem é construída com:
 
-For end-to-end (e2e) testing, run:
+- **API:** `http://localhost:8080`
+- **Keycloak:** `http://localhost:8081` (realm `unifor`, client `unifor-manager`)
+
+Assim o login redireciona para o Keycloak no host. Para usar outras URLs (por exemplo Keycloak em outro servidor), passe os build args:
 
 ```bash
-ng e2e
+docker compose build --build-arg API_URL=https://api.seudominio.com --build-arg KEYCLOAK_URL=https://auth.seudominio.com
+docker compose up -d
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Testes
 
-## Additional Resources
+```bash
+npm test
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Executa os testes unitários com Vitest.
+
+## Estrutura do projeto
+
+- **`src/app/`** — Componente raiz, shell (header, sidebar, navegação), rotas e páginas (matrizes, turmas, matrículas, turmas disponíveis).
+- **`libs/api/`** — Serviços REST (coordenador, aluno), DTOs, interceptors (token, erros), formatação de horários.
+- **`libs/auth/`** — Guards (auth, role, redirect por perfil), interceptor de erro de autenticação.
+- **`src/environments/`** — Configuração de ambiente (API, Keycloak).
+- **`documentation/`** — [ARCHITECTURE.md](documentation/ARCHITECTURE.md), [FRONTEND_CONTRACT.md](documentation/FRONTEND_CONTRACT.md), [PRD.md](documentation/PRD.md).
+
+## Documentação
+
+- [ARCHITECTURE.md](documentation/ARCHITECTURE.md) — Arquitetura técnica e estrutura Nx.
+- [FRONTEND_CONTRACT.md](documentation/FRONTEND_CONTRACT.md) — Contrato com o backend (endpoints, DTOs).
+- [PRD.md](documentation/PRD.md) — Requisitos e regras de negócio.
+
+## Licença
+
+Uso interno / acadêmico conforme definido pelo projeto Unifor Manager.

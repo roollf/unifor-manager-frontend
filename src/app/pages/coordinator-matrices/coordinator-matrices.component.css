@@ -1,0 +1,45 @@
+.matrices-page {
+  padding: 1rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #212121;
+}
+
+.link-btn {
+  text-decoration: none;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: #616161 !important;
+}
+
+.create-dialog .field {
+  margin-bottom: 1rem;
+}
+
+.create-dialog .field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Reserve space for validation message so dialog does not resize when error appears */
+.create-dialog .field-validation {
+  min-height: 1.5rem;
+}
+
+.create-dialog .w-full {
+  width: 100%;
+}

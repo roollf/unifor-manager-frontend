@@ -9,7 +9,7 @@ import Keycloak from 'keycloak-js';
 
 /**
  * Handles 401 (redirect to Keycloak login) and 403 (redirect to /forbidden).
- * Per PRD Phase 2: 401 triggers re-authentication, 403 displays access denied.
+ * Per PRD §3 and Phase 6: 401 → redirect to login (Keycloak); 403 → show “access denied” (/forbidden page).
  */
 export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);

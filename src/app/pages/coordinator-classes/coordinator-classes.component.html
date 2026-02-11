@@ -1,0 +1,347 @@
+<div class="classes-page">
+  <header class="page-header">
+    <div class="header-title">
+      <a routerLink="/coordinator/matrices" class="back-link" aria-label="Voltar para Matrizes">
+        <i class="pi pi-arrow-left"></i>
+      </a>
+      <h1>Turmas</h1>
+      @if (matrixId() !== null) {
+        <p-button
+          label="Adicionar turma"
+          icon="pi pi-plus"
+          (onClick)="openCreateDialog()"
+          class="add-class-btn"
+        />
+      }
+    </div>
+  </header>
+
+  @if (matrixId() === null) {
+    <p class="invalid-id">Matriz inválida.</p>
+  } @else {
+    <p-confirmDialog />
+    <section class="filters filter-panel" [formGroup]="filterForm">
+      <div class="filter-row">
+        <div class="field">
+          <label for="period">Turno</label>
+          <p-select
+            id="period"
+            formControlName="periodOfDay"
+            [options]="periodOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Todos"
+            class="w-full"
+            [showClear]="true"
+          />
+        </div>
+        <div class="field">
+          <label for="filter-course">Curso autorizado</label>
+          <p-select
+            id="filter-course"
+            formControlName="authorizedCourseId"
+            [options]="courseOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Todos"
+            class="w-full"
+            [showClear]="true"
+          />
+        </div>
+        <div class="field">
+          <label for="max-min">Mín. vagas</label>
+          <p-inputNumber
+            id="max-min"
+            formControlName="maxStudentsMin"
+            placeholder="—"
+            [useGrouping]="false"
+            class="w-full"
+          />
+        </div>
+        <div class="field">
+          <label for="max-max">Máx. vagas</label>
+          <p-inputNumber
+            id="max-max"
+            formControlName="maxStudentsMax"
+            placeholder="—"
+            [useGrouping]="false"
+            class="w-full"
+          />
+        </div>
+        <div class="field checkbox-field">
+          <p-checkbox
+            formControlName="includeDeleted"
+            [binary]="true"
+            inputId="include-deleted"
+          />
+          <label for="include-deleted">Incluir excluídas</label>
+        </div>
+        <div class="field actions">
+          <p-button label="Aplicar filtros" (onClick)="applyFilters()" [loading]="loading()" />
+        </div>
+      </div>
+    </section>
+
+    <p-table
+      [value]="classes()"
+      [loading]="loading()"
+      [tableStyle]="{ 'min-width': '60rem' }"
+      class="p-datatable-sm app-table"
+      [rowTrackBy]="trackById"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Disciplina</th>
+          <th>Professor</th>
+          <th>Horário</th>
+          <th>Cursos autorizados</th>
+          <th>Vagas</th>
+          <th>Matriculados</th>
+          <th>Status</th>
+          <th style="width: 6rem">Ações</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.subject?.name ?? '—' }}</td>
+          <td>{{ row.professor?.name ?? '—' }}</td>
+          <td>{{ formatTimeSlot(row.timeSlot) }}</td>
+          <td>{{ formatCourses(row.authorizedCourses) }}</td>
+          <td>{{ row.maxStudents }}</td>
+          <td>{{ row.currentEnrollments }}</td>
+          <td>
+            @if (row.deletedAt) {
+              <p-tag value="Excluída" severity="danger" />
+            } @else {
+              <p-tag value="Ativa" severity="success" />
+            }
+          </td>
+          <td>
+            <div class="table-actions">
+              <p-button
+                label="Editar"
+                icon="pi pi-pencil"
+                severity="secondary"
+                size="small"
+                (onClick)="openEditDialog(row)"
+              />
+              @if (!row.deletedAt) {
+                <p-button
+                  label="Excluir"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  size="small"
+                  (onClick)="confirmDelete(row)"
+                />
+              }
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="empty-message">Nenhuma turma encontrada.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <p-dialog
+      header="Adicionar turma"
+      [visible]="createDialogVisible()"
+      [modal]="true"
+      [closable]="true"
+      [draggable]="false"
+      [resizable]="false"
+      (onHide)="closeCreateDialog()"
+      class="create-class-dialog"
+      [contentStyle]="{ 'min-width': '26rem', 'max-height': '85vh', 'overflow-y': 'auto' }"
+    >
+      <form [formGroup]="createForm">
+        <div class="field">
+          <label for="create-subject">Disciplina</label>
+          <p-select
+            id="create-subject"
+            formControlName="subjectId"
+            [options]="subjectOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Selecione a disciplina"
+            class="w-full"
+            [showClear]="false"
+            appendTo="body"
+          />
+          <div class="field-validation">
+            @if (createForm.controls.subjectId.touched && createForm.controls.subjectId.errors) {
+              <small class="p-error block mt-1">Disciplina é obrigatória.</small>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label for="create-professor">Professor</label>
+          <p-select
+            id="create-professor"
+            formControlName="professorId"
+            [options]="professorOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Selecione o professor"
+            class="w-full"
+            [showClear]="false"
+            appendTo="body"
+          />
+          <div class="field-validation">
+            @if (createForm.controls.professorId.touched && createForm.controls.professorId.errors) {
+              <small class="p-error block mt-1">Professor é obrigatório.</small>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label for="create-timeslot">Horário</label>
+          <p-select
+            id="create-timeslot"
+            formControlName="timeSlotId"
+            [options]="timeSlotOptions()"
+            optionLabel="label"
+            optionValue="id"
+            placeholder="Selecione o horário"
+            class="w-full"
+            [showClear]="false"
+            appendTo="body"
+          />
+          <div class="field-validation">
+            @if (createForm.controls.timeSlotId.touched && createForm.controls.timeSlotId.errors) {
+              <small class="p-error block mt-1">Horário é obrigatório.</small>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label for="create-courses">Cursos autorizados</label>
+          <p-multiSelect
+            id="create-courses"
+            formControlName="authorizedCourseIds"
+            [options]="courseOptions()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Selecione os cursos (opcional)"
+            class="w-full"
+            [showClear]="true"
+            appendTo="body"
+          />
+        </div>
+        <div class="field">
+          <label for="create-max">Vagas</label>
+          <p-inputNumber
+            id="create-max"
+            formControlName="maxStudents"
+            [min]="1"
+            [useGrouping]="false"
+            class="w-full"
+          />
+          <div class="field-validation">
+            @if (createForm.controls.maxStudents.touched && createForm.controls.maxStudents.errors) {
+              <small class="p-error block mt-1">Deve ser pelo menos 1.</small>
+            }
+          </div>
+        </div>
+      </form>
+      <ng-template pTemplate="footer">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (onClick)="closeCreateDialog()"
+          [disabled]="creating()"
+        />
+        <p-button
+          label="Salvar"
+          (onClick)="submitCreate()"
+          [loading]="creating()"
+          [disabled]="createForm.invalid"
+        />
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog
+      header="Editar turma"
+      [visible]="editDialogVisible()"
+      [modal]="true"
+      [closable]="true"
+      [draggable]="false"
+      [resizable]="false"
+      (onHide)="closeEditDialog()"
+      class="edit-class-dialog"
+      [contentStyle]="{ 'min-width': '26rem', 'max-height': '85vh', 'overflow-y': 'auto' }"
+    >
+      @if (editingClass(); as cls) {
+        <p class="edit-class-subject"><strong>Disciplina:</strong> {{ cls.subject.name }}</p>
+        <form [formGroup]="editForm">
+          <div class="field">
+            <label for="edit-professor">Professor</label>
+            <p-select
+              id="edit-professor"
+              formControlName="professorId"
+              [options]="professorOptions()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Selecione o professor"
+              class="w-full"
+              [showClear]="false"
+              appendTo="body"
+            />
+            <div class="field-validation">
+              @if (editForm.controls.professorId.touched && editForm.controls.professorId.errors) {
+                <small class="p-error block mt-1">Professor é obrigatório.</small>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label for="edit-timeslot">Horário</label>
+            <p-select
+              id="edit-timeslot"
+              formControlName="timeSlotId"
+              [options]="timeSlotOptions()"
+              optionLabel="label"
+              optionValue="id"
+              placeholder="Selecione o horário"
+              class="w-full"
+              [showClear]="false"
+              appendTo="body"
+            />
+            <div class="field-validation">
+              @if (editForm.controls.timeSlotId.touched && editForm.controls.timeSlotId.errors) {
+                <small class="p-error block mt-1">Horário é obrigatório.</small>
+              }
+            </div>
+          </div>
+          <div class="field">
+            <label for="edit-courses">Cursos autorizados</label>
+            <p-multiSelect
+              id="edit-courses"
+              formControlName="authorizedCourseIds"
+              [options]="courseOptions()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Selecione os cursos (opcional)"
+              class="w-full"
+              [showClear]="true"
+              appendTo="body"
+            />
+          </div>
+        </form>
+      }
+      <ng-template pTemplate="footer">
+        <p-button
+          label="Cancelar"
+          severity="secondary"
+          (onClick)="closeEditDialog()"
+          [disabled]="editing()"
+        />
+        <p-button
+          label="Salvar"
+          (onClick)="submitEdit()"
+          [loading]="editing()"
+          [disabled]="editForm.invalid"
+        />
+      </ng-template>
+    </p-dialog>
+  }
+</div>
