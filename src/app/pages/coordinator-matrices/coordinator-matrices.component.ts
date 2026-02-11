@@ -42,6 +42,8 @@ export class CoordinatorMatricesComponent {
   protected readonly loading = signal(false);
   protected readonly createDialogVisible = signal(false);
   protected readonly creating = signal(false);
+  /** Matrix ID currently being activated (for button loading state). */
+  protected readonly activatingMatrixId = signal<number | null>(null);
 
   protected createForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(1)]],
@@ -93,9 +95,13 @@ export class CoordinatorMatricesComponent {
 
   protected activateMatrix(matrix: MatrixListItemDto): void {
     if (matrix.active) return;
+    this.activatingMatrixId.set(matrix.id);
     this.coordinator
       .activateMatrix(matrix.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.activatingMatrixId.set(null))
+      )
       .subscribe({
         next: () => this.loadMatrices(),
       });

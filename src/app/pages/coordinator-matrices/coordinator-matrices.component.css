@@ -12,10 +12,7 @@
 .page-header h1 {
   margin: 0;
   font-size: 1.5rem;
-}
-
-.action-btn {
-  margin-right: 0.5rem;
+  color: #212121;
 }
 
 .link-btn {
@@ -25,7 +22,7 @@
 .empty-message {
   text-align: center;
   padding: 2rem;
-  color: var(--p-text-muted-color, #6c757d);
+  color: #616161 !important;
 }
 
 .create-dialog .field {
@@ -36,6 +33,11 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+}
+
+/* Reserve space for validation message so dialog does not resize when error appears */
+.create-dialog .field-validation {
+  min-height: 1.5rem;
 }
 
 .create-dialog .w-full {
