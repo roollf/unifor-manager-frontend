@@ -20,6 +20,12 @@ import type {
   TimeSlotDto,
   CourseDto,
 } from '@unifor-manager/api';
+import {
+  formatTimeSlotLabel,
+  formatTimeSlotShortLabel,
+  PERIOD_OPTIONS,
+  toBackendPeriodOfDay,
+} from '@unifor-manager/api';
 import { forkJoin } from 'rxjs';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
@@ -32,13 +38,6 @@ import { Dialog } from 'primeng/dialog';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { MultiSelect } from 'primeng/multiselect';
 import { finalize } from 'rxjs/operators';
-
-const PERIOD_OPTIONS: { label: string; value: string | null }[] = [
-  { label: 'All', value: null },
-  { label: 'Morning', value: 'MORNING' },
-  { label: 'Afternoon', value: 'AFTERNOON' },
-  { label: 'Evening', value: 'EVENING' },
-];
 
 @Component({
   selector: 'app-coordinator-classes',
@@ -89,7 +88,7 @@ export class CoordinatorClassesComponent {
   protected timeSlotOptions = computed(() =>
     this.timeSlotsRef().map((s) => ({
       id: s.id,
-      label: `${s.dayOfWeek} ${s.startTime}–${s.endTime}`,
+      label: formatTimeSlotShortLabel(s),
     }))
   );
   protected courseOptions = computed(() => this.coursesRef());
@@ -157,9 +156,8 @@ export class CoordinatorClassesComponent {
   private buildParams(): ListClassesParams {
     const v = this.filterForm.getRawValue();
     const params: ListClassesParams = {};
-    if (v.periodOfDay != null && v.periodOfDay !== '') {
-      params.periodOfDay = v.periodOfDay as ListClassesParams['periodOfDay'];
-    }
+    const period = toBackendPeriodOfDay(v.periodOfDay);
+    if (period != null) params.periodOfDay = period;
     if (v.authorizedCourseId != null) params.authorizedCourseId = v.authorizedCourseId;
     if (v.maxStudentsMin != null) params.maxStudentsMin = v.maxStudentsMin;
     if (v.maxStudentsMax != null) params.maxStudentsMax = v.maxStudentsMax;
@@ -270,8 +268,7 @@ export class CoordinatorClassesComponent {
   }
 
   protected formatTimeSlot(slot: MatrixClassDto['timeSlot']): string {
-    if (!slot) return '—';
-    return `${slot.dayOfWeek} ${slot.startTime}–${slot.endTime}`;
+    return formatTimeSlotLabel(slot);
   }
 
   protected formatCourses(courses: MatrixClassDto['authorizedCourses']): string {
@@ -287,22 +284,24 @@ export class CoordinatorClassesComponent {
     const matrixId = this.matrixId();
     if (matrixId == null) return;
     this.confirmationService.confirm({
-      header: 'Delete class',
-      message: `Delete class "${row.subject?.name ?? '—'}" in this time slot? This will soft-delete the class.`,
+      header: 'Excluir turma',
+      message: `Excluir a turma "${row.subject?.name ?? '—'}" neste horário? A turma será desativada (exclusão lógica).`,
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Delete',
-      rejectLabel: 'Cancel',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => this.executeDelete(matrixId, row.id),
     });
   }
 
   private executeDelete(matrixId: number, classId: number): void {
+    this.loading.set(true);
     this.coordinator
       .deleteClass(matrixId, classId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.loadWithCurrentFilters(matrixId),
+        error: () => this.loading.set(false),
       });
   }
 }

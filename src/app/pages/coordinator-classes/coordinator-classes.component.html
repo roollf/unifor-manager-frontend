@@ -1,12 +1,13 @@
 <div class="classes-page">
   <header class="page-header">
     <div class="header-title">
-      <a routerLink="/coordinator/matrices" class="back-link">← Matrices</a>
-      <h1>Classes</h1>
+      <a routerLink="/coordinator/matrices" class="back-link" aria-label="Voltar para Matrizes">
+        <i class="pi pi-arrow-left"></i>
+      </a>
+      <h1>Turmas</h1>
       @if (matrixId() !== null) {
-        <span class="matrix-id">Matrix ID: {{ matrixId() }}</span>
         <p-button
-          label="Add class"
+          label="Adicionar turma"
           icon="pi pi-plus"
           (onClick)="openCreateDialog()"
           class="add-class-btn"
@@ -16,55 +17,55 @@
   </header>
 
   @if (matrixId() === null) {
-    <p class="invalid-id">Invalid matrix.</p>
+    <p class="invalid-id">Matriz inválida.</p>
   } @else {
     <p-confirmDialog />
-    <section class="filters" [formGroup]="filterForm">
+    <section class="filters filter-panel" [formGroup]="filterForm">
       <div class="filter-row">
         <div class="field">
-          <label for="period">Period of day</label>
+          <label for="period">Turno</label>
           <p-select
             id="period"
             formControlName="periodOfDay"
             [options]="periodOptions"
             optionLabel="label"
             optionValue="value"
-            placeholder="All"
-            styleClass="w-full"
+            placeholder="Todos"
+            class="w-full"
             [showClear]="true"
           />
         </div>
         <div class="field">
-          <label for="filter-course">Authorized course</label>
+          <label for="filter-course">Curso autorizado</label>
           <p-select
             id="filter-course"
             formControlName="authorizedCourseId"
             [options]="courseOptions()"
             optionLabel="name"
             optionValue="id"
-            placeholder="All"
-            styleClass="w-full"
+            placeholder="Todos"
+            class="w-full"
             [showClear]="true"
           />
         </div>
         <div class="field">
-          <label for="max-min">Max students min</label>
+          <label for="max-min">Mín. vagas</label>
           <p-inputNumber
             id="max-min"
             formControlName="maxStudentsMin"
             placeholder="—"
             [useGrouping]="false"
-            styleClass="w-full"
+            class="w-full"
           />
         </div>
         <div class="field">
-          <label for="max-max">Max students max</label>
+          <label for="max-max">Máx. vagas</label>
           <p-inputNumber
             id="max-max"
             formControlName="maxStudentsMax"
             placeholder="—"
             [useGrouping]="false"
-            styleClass="w-full"
+            class="w-full"
           />
         </div>
         <div class="field checkbox-field">
@@ -73,10 +74,10 @@
             [binary]="true"
             inputId="include-deleted"
           />
-          <label for="include-deleted">Include deleted</label>
+          <label for="include-deleted">Incluir excluídas</label>
         </div>
         <div class="field actions">
-          <p-button label="Apply filters" (onClick)="applyFilters()" [loading]="loading()" />
+          <p-button label="Aplicar filtros" (onClick)="applyFilters()" [loading]="loading()" />
         </div>
       </div>
     </section>
@@ -85,19 +86,19 @@
       [value]="classes()"
       [loading]="loading()"
       [tableStyle]="{ 'min-width': '60rem' }"
-      styleClass="p-datatable-sm"
+      class="p-datatable-sm app-table"
       [rowTrackBy]="trackById"
     >
       <ng-template pTemplate="header">
         <tr>
-          <th>Subject</th>
+          <th>Disciplina</th>
           <th>Professor</th>
-          <th>Time slot</th>
-          <th>Authorized courses</th>
-          <th>Max students</th>
-          <th>Enrollments</th>
+          <th>Horário</th>
+          <th>Cursos autorizados</th>
+          <th>Vagas</th>
+          <th>Matriculados</th>
           <th>Status</th>
-          <th style="width: 6rem">Actions</th>
+          <th style="width: 6rem">Ações</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-row>
@@ -110,66 +111,70 @@
           <td>{{ row.currentEnrollments }}</td>
           <td>
             @if (row.deletedAt) {
-              <p-tag value="Deleted" severity="danger" />
+              <p-tag value="Excluída" severity="danger" />
             } @else {
-              <p-tag value="Active" severity="success" />
+              <p-tag value="Ativa" severity="success" />
             }
           </td>
           <td>
-            <p-button
-              label="Edit"
-              icon="pi pi-pencil"
-              severity="secondary"
-              size="small"
-              (onClick)="openEditDialog(row)"
-              class="action-btn"
-            />
-            @if (!row.deletedAt) {
+            <div class="table-actions">
               <p-button
-                label="Delete"
-                icon="pi pi-trash"
-                severity="danger"
+                label="Editar"
+                icon="pi pi-pencil"
+                severity="secondary"
                 size="small"
-                (onClick)="confirmDelete(row)"
-                class="action-btn"
+                (onClick)="openEditDialog(row)"
               />
-            }
+              @if (!row.deletedAt) {
+                <p-button
+                  label="Excluir"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  size="small"
+                  (onClick)="confirmDelete(row)"
+                />
+              }
+            </div>
           </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="8" class="empty-message">No classes found.</td>
+          <td colspan="8" class="empty-message">Nenhuma turma encontrada.</td>
         </tr>
       </ng-template>
     </p-table>
 
     <p-dialog
-      header="Add class"
+      header="Adicionar turma"
       [visible]="createDialogVisible()"
       [modal]="true"
       [closable]="true"
       [draggable]="false"
       [resizable]="false"
       (onHide)="closeCreateDialog()"
-      styleClass="create-class-dialog"
+      class="create-class-dialog"
+      [contentStyle]="{ 'min-width': '26rem', 'max-height': '85vh', 'overflow-y': 'auto' }"
     >
       <form [formGroup]="createForm">
         <div class="field">
-          <label for="create-subject">Subject</label>
+          <label for="create-subject">Disciplina</label>
           <p-select
             id="create-subject"
             formControlName="subjectId"
             [options]="subjectOptions()"
             optionLabel="name"
             optionValue="id"
-            placeholder="Select subject"
-            styleClass="w-full"
+            placeholder="Selecione a disciplina"
+            class="w-full"
             [showClear]="false"
+            appendTo="body"
           />
-          @if (createForm.controls.subjectId.touched && createForm.controls.subjectId.errors) {
-            <small class="p-error block mt-1">Subject is required.</small>
-          }
+          <div class="field-validation">
+            @if (createForm.controls.subjectId.touched && createForm.controls.subjectId.errors) {
+              <small class="p-error block mt-1">Disciplina é obrigatória.</small>
+            }
+          </div>
         </div>
         <div class="field">
           <label for="create-professor">Professor</label>
@@ -179,66 +184,75 @@
             [options]="professorOptions()"
             optionLabel="name"
             optionValue="id"
-            placeholder="Select professor"
-            styleClass="w-full"
+            placeholder="Selecione o professor"
+            class="w-full"
             [showClear]="false"
+            appendTo="body"
           />
-          @if (createForm.controls.professorId.touched && createForm.controls.professorId.errors) {
-            <small class="p-error block mt-1">Professor is required.</small>
-          }
+          <div class="field-validation">
+            @if (createForm.controls.professorId.touched && createForm.controls.professorId.errors) {
+              <small class="p-error block mt-1">Professor é obrigatório.</small>
+            }
+          </div>
         </div>
         <div class="field">
-          <label for="create-timeslot">Time slot</label>
+          <label for="create-timeslot">Horário</label>
           <p-select
             id="create-timeslot"
             formControlName="timeSlotId"
             [options]="timeSlotOptions()"
             optionLabel="label"
             optionValue="id"
-            placeholder="Select time slot"
-            styleClass="w-full"
+            placeholder="Selecione o horário"
+            class="w-full"
             [showClear]="false"
+            appendTo="body"
           />
-          @if (createForm.controls.timeSlotId.touched && createForm.controls.timeSlotId.errors) {
-            <small class="p-error block mt-1">Time slot is required.</small>
-          }
+          <div class="field-validation">
+            @if (createForm.controls.timeSlotId.touched && createForm.controls.timeSlotId.errors) {
+              <small class="p-error block mt-1">Horário é obrigatório.</small>
+            }
+          </div>
         </div>
         <div class="field">
-          <label for="create-courses">Authorized courses</label>
+          <label for="create-courses">Cursos autorizados</label>
           <p-multiSelect
             id="create-courses"
             formControlName="authorizedCourseIds"
             [options]="courseOptions()"
             optionLabel="name"
             optionValue="id"
-            placeholder="Select courses (optional)"
-            styleClass="w-full"
+            placeholder="Selecione os cursos (opcional)"
+            class="w-full"
             [showClear]="true"
+            appendTo="body"
           />
         </div>
         <div class="field">
-          <label for="create-max">Max students</label>
+          <label for="create-max">Vagas</label>
           <p-inputNumber
             id="create-max"
             formControlName="maxStudents"
             [min]="1"
             [useGrouping]="false"
-            styleClass="w-full"
+            class="w-full"
           />
-          @if (createForm.controls.maxStudents.touched && createForm.controls.maxStudents.errors) {
-            <small class="p-error block mt-1">Must be at least 1.</small>
-          }
+          <div class="field-validation">
+            @if (createForm.controls.maxStudents.touched && createForm.controls.maxStudents.errors) {
+              <small class="p-error block mt-1">Deve ser pelo menos 1.</small>
+            }
+          </div>
         </div>
       </form>
       <ng-template pTemplate="footer">
         <p-button
-          label="Cancel"
+          label="Cancelar"
           severity="secondary"
           (onClick)="closeCreateDialog()"
           [disabled]="creating()"
         />
         <p-button
-          label="Save"
+          label="Salvar"
           (onClick)="submitCreate()"
           [loading]="creating()"
           [disabled]="createForm.invalid"
@@ -247,17 +261,18 @@
     </p-dialog>
 
     <p-dialog
-      header="Edit class"
+      header="Editar turma"
       [visible]="editDialogVisible()"
       [modal]="true"
       [closable]="true"
       [draggable]="false"
       [resizable]="false"
       (onHide)="closeEditDialog()"
-      styleClass="edit-class-dialog"
+      class="edit-class-dialog"
+      [contentStyle]="{ 'min-width': '26rem', 'max-height': '85vh', 'overflow-y': 'auto' }"
     >
       @if (editingClass(); as cls) {
-        <p class="edit-class-subject"><strong>Subject:</strong> {{ cls.subject.name }}</p>
+        <p class="edit-class-subject"><strong>Disciplina:</strong> {{ cls.subject.name }}</p>
         <form [formGroup]="editForm">
           <div class="field">
             <label for="edit-professor">Professor</label>
@@ -267,54 +282,61 @@
               [options]="professorOptions()"
               optionLabel="name"
               optionValue="id"
-              placeholder="Select professor"
-              styleClass="w-full"
+              placeholder="Selecione o professor"
+              class="w-full"
               [showClear]="false"
+              appendTo="body"
             />
-            @if (editForm.controls.professorId.touched && editForm.controls.professorId.errors) {
-              <small class="p-error block mt-1">Professor is required.</small>
-            }
+            <div class="field-validation">
+              @if (editForm.controls.professorId.touched && editForm.controls.professorId.errors) {
+                <small class="p-error block mt-1">Professor é obrigatório.</small>
+              }
+            </div>
           </div>
           <div class="field">
-            <label for="edit-timeslot">Time slot</label>
+            <label for="edit-timeslot">Horário</label>
             <p-select
               id="edit-timeslot"
               formControlName="timeSlotId"
               [options]="timeSlotOptions()"
               optionLabel="label"
               optionValue="id"
-              placeholder="Select time slot"
-              styleClass="w-full"
+              placeholder="Selecione o horário"
+              class="w-full"
               [showClear]="false"
+              appendTo="body"
             />
-            @if (editForm.controls.timeSlotId.touched && editForm.controls.timeSlotId.errors) {
-              <small class="p-error block mt-1">Time slot is required.</small>
-            }
+            <div class="field-validation">
+              @if (editForm.controls.timeSlotId.touched && editForm.controls.timeSlotId.errors) {
+                <small class="p-error block mt-1">Horário é obrigatório.</small>
+              }
+            </div>
           </div>
           <div class="field">
-            <label for="edit-courses">Authorized courses</label>
+            <label for="edit-courses">Cursos autorizados</label>
             <p-multiSelect
               id="edit-courses"
               formControlName="authorizedCourseIds"
               [options]="courseOptions()"
               optionLabel="name"
               optionValue="id"
-              placeholder="Select courses (optional)"
-              styleClass="w-full"
+              placeholder="Selecione os cursos (opcional)"
+              class="w-full"
               [showClear]="true"
+              appendTo="body"
             />
           </div>
         </form>
       }
       <ng-template pTemplate="footer">
         <p-button
-          label="Cancel"
+          label="Cancelar"
           severity="secondary"
           (onClick)="closeEditDialog()"
           [disabled]="editing()"
         />
         <p-button
-          label="Save"
+          label="Salvar"
           (onClick)="submitEdit()"
           [loading]="editing()"
           [disabled]="editForm.invalid"
