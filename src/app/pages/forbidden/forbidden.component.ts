@@ -7,11 +7,12 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   template: `
     <div class="forbidden">
-      <h2>Access denied</h2>
-      <p>You do not have permission to access this page.</p>
-      <a routerLink="/">Return to home</a>
+      <h2>Acesso negado</h2>
+      <p>Você não tem permissão para acessar esta página.</p>
+      <a routerLink="/">Voltar ao início</a>
     </div>
   `,
+  /* PRD §3: 403 Forbidden → show "access denied" (e.g. PrimeNG Message). This page fulfils that. */
   styles: `
     .forbidden {
       padding: 2rem;
