@@ -6,7 +6,9 @@
 export * from './core/api-base-url.token';
 export * from './models';
 export * from './coordinator/coordinator.service';
-export * from './coordinator/list-classes-params';
+export { toBackendPeriodOfDay } from './coordinator/list-classes-params';
+export type { ListClassesParams } from './coordinator/list-classes-params';
 export * from './student/student.service';
 export * from './student/list-available-classes-params';
 export * from './interceptors/error.interceptor';
+export * from './errors/error-messages';

@@ -7,7 +7,9 @@ import type {
   EnrollRequestDto,
   AvailableClassDto,
   PaginatedResponseDto,
+  StudentMeDto,
 } from '../models';
+import { catchError, of } from 'rxjs';
 import { API_BASE_URL } from '../core/api-base-url.token';
 import type { ListAvailableClassesParams } from './list-available-classes-params';
 
@@ -23,6 +25,18 @@ export class StudentService {
 
   private get studentBase(): string {
     return `${this.baseUrl}/api/student`;
+  }
+
+  /**
+   * Current student info (e.g. course for display). Backend may expose GET /api/student/me.
+   * On 404 or error, returns { course: null } so UI can show "Not set" without failing.
+   */
+  getMe(): Observable<StudentMeDto> {
+    return this.http
+      .get<StudentMeDto>(`${this.studentBase}/me`)
+      .pipe(
+        catchError(() => of({ course: null }))
+      );
   }
 
   listEnrollments(): Observable<EnrollmentDto[]> {
